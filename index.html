@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mes De La Biblia</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #f5f0e6;
+            color: #5a4a3a;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .contenedor {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #8b6b4a;
+            margin-bottom: 30px;
+        }
+
+        .tombolas {
+            display: flex;
+            justify-content: space-between;
+            margin: 40px 0;
+            gap: 20px;
+        }
+        
+        .tombola {
+            background-color: #fff8e8;
+            border: 2px solid #d4a76a;
+            border-radius: 10px;
+            padding: 20px;
+            flex: 1;
+            min-height: 180px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tombola h2 {
+            margin-top: 0;
+            color: #8b6b4a;
+            font-size: 2em;
+        }
+        
+        .resultado {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            margin: 15px 0;
+            background-color: #f9f4ea;
+            border-radius: 8px;
+            min-height: 60px;
+        }
+        
+        .btn-girar {
+            background-color: #d4a76a;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-girar:hover {
+            background-color: #b38c5a;
+        }
+        
+        .btn-todo {
+            background-color: #8b6b4a;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            margin-top: 20px;
+        }
+        
+        .btn-todo:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        @keyframes spin {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .spinning {
+            animation: spin 0.1s infinite;
+            color: #d4a76a;
+        }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <h1>Mes De La Biblia 2025</h1>
+        
+        <div class="tombolas">
+            <div class="tombola">
+                <h2>Columna</h2>
+                <div class="resultado" id="columna">-</div>
+            </div>
+            
+            <div class="tombola">
+                <h2>Fila</h2>
+                <div class="resultado" id="fila">-</div>
+            </div>
+            
+            <div class="tombola">
+                <h2>Silla</h2>
+                <div class="resultado" id="silla">-</div>
+            </div>
+        </div>
+        
+        <button class="btn-girar btn-todo" id="btnGirar" onclick="girarTodo()">Girar Todo</button>
+    </div>
+    
+    <script>
+        const columnas = ['A', 'B', 'C', 'D'];
+        const filas = Array.from({length: 11}, (_, i) => i + 1);
+        let isSpinning = false;
+        
+        function girarColumna() {
+            return new Promise((resolve) => {
+                const elemento = document.getElementById('columna');
+                elemento.classList.add('spinning');
+                
+                let counter = 0;
+                const interval = setInterval(() => {
+                    const random = Math.floor(Math.random() * columnas.length);
+                    elemento.textContent = columnas[random];
+                    counter += 100;
+                    
+                    if (counter >= 5000) { // 5 segundos
+                        clearInterval(interval);
+                        elemento.classList.remove('spinning');
+                        resolve();
+                    }
+                }, 100);
+            });
+        }
+        
+        function girarFila() {
+            return new Promise((resolve) => {
+                const elemento = document.getElementById('fila');
+                elemento.classList.add('spinning');
+                
+                let counter = 0;
+                const interval = setInterval(() => {
+                    const random = Math.floor(Math.random() * filas.length);
+                    elemento.textContent = filas[random];
+                    counter += 100;
+                    
+                    if (counter >= 5000) { // 5 segundos
+                        clearInterval(interval);
+                        elemento.classList.remove('spinning');
+                        resolve();
+                    }
+                }, 100);
+            });
+        }
+        
+        function girarSilla() {
+            return new Promise((resolve) => {
+                const columna = document.getElementById('columna').textContent;
+                const elemento = document.getElementById('silla');
+                elemento.classList.add('spinning');
+                
+                let maxSillas = 4; // Columna A
+                if (columna === 'B' || columna === 'C') maxSillas = 5;
+                else if (columna === 'D') maxSillas = 6;
+                
+                let counter = 0;
+                const interval = setInterval(() => {
+                    if (columna !== '-' && columnas.includes(columna)) {
+                        const silla = Math.floor(Math.random() * maxSillas) + 1;
+                        elemento.textContent = silla;
+                    } else {
+                        elemento.textContent = '-';
+                    }
+                    counter += 100;
+                    
+                    if (counter >= 3000) { // 5 segundos
+                        clearInterval(interval);
+                        elemento.classList.remove('spinning');
+                        resolve();
+                    }
+                }, 100);
+            });
+        }
+        
+        async function girarTodo() {
+            if (isSpinning) return;
+            isSpinning = true;
+            document.getElementById('btnGirar').disabled = true;
+            
+            // Girar columna y fila simultáneamente
+            await Promise.all([girarColumna(), girarFila()]);
+            
+            // Luego girar silla
+            await girarSilla();
+            
+            isSpinning = false;
+            document.getElementById('btnGirar').disabled = false;
+        }
+    </script>
+</body>
+</html>
