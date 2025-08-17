@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anagramas Bíblicos</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            width: 95vw;
+            height: 95vh;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+            background-color: #F5F5DC; /* Beige claro */
+            color: #5A4A42; /* Marrón pastel */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        h1 {
+            color: #8B7355; /* Marrón dorado */
+            font-size: 3.5rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .container {
+            background-color: #FFF8E7; /* Beige muy claro */
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 1200px;
+            min-height: 70vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+        .anagrama-container {
+            margin: 40px 0;
+        }
+        .anagrama {
+            font-size: 4rem;
+            margin: 40px 0;
+            letter-spacing: 8px;
+            color: #B38B6D; /* Marrón pastel más oscuro */
+            min-height: 100px;
+            font-weight: bold;
+            word-break: break-word;
+        }
+        button {
+            background-color: #D4B483; /* Dorado pastel */
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            font-size: 2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        button:hover {
+            background-color: #C19A6B;
+            transform: scale(1.05);
+        }
+        .solucion {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #6B8E23; /* Verde oliva */
+            margin: 40px 0;
+            min-height: 80px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        .restantes {
+            margin-top: 40px;
+            font-size: 2rem;
+            color: #8B7355; /* Marrón dorado */
+            font-style: italic;
+        }
+        .instrucciones {
+            font-size: 1.8rem;
+            color: #8B7355;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>ACTIVIDAD SORPRESA</h1>
+    <div class="container">
+        <button id="generarBtn">GENERAR ANAGRAMA</button>
+        
+        <div class="anagrama-container">
+            <div class="anagrama" id="anagrama"></div>
+        </div>
+        
+        <button id="solucionBtn" style="display: none; background-color: #A38F6E;">MOSTRAR SOLUCIÓN</button>
+        
+        <div class="solucion" id="solucion"></div>
+        
+        <div class="restantes" id="restantes">66 libros disponibles</div>
+    </div>
+
+    <script>
+        // Lista completa de los 66 libros de la Biblia
+        let librosBiblia = [
+            "Génesis", "Éxodo", "Levítico", "Números", "Deuteronomio", 
+            "Josué", "Jueces", "Rut", "1 Samuel", "2 Samuel", 
+            "1 Reyes", "2 Reyes", "1 Crónicas", "2 Crónicas", "Esdras", 
+            "Nehemías", "Ester", "Job", "Salmos", "Proverbios", 
+            "Eclesiastés", "Cantares", "Isaías", "Jeremías", "Lamentaciones", 
+            "Ezequiel", "Daniel", "Oseas", "Joel", "Amós", 
+            "Abdías", "Jonás", "Miqueas", "Nahúm", "Habacuc", 
+            "Sofonías", "Hageo", "Zacarías", "Malaquías", 
+            "Mateo", "Marcos", "Lucas", "Juan", "Hechos", 
+            "Romanos", "1 Corintios", "2 Corintios", "Gálatas", 
+            "Efesios", "Filipenses", "Colosenses", "1 Tesalonicenses", 
+            "2 Tesalonicenses", "1 Timoteo", "2 Timoteo", "Tito", 
+            "Filemón", "Hebreos", "Santiago", "1 Pedro", "2 Pedro", 
+            "1 Juan", "2 Juan", "3 Juan", "Judas", "Apocalipsis"
+        ];
+
+        let librosRestantes = [...librosBiblia];
+        let libroActual = "";
+        let anagramaActual = "";
+
+        document.getElementById('generarBtn').addEventListener('click', generarAnagrama);
+        document.getElementById('solucionBtn').addEventListener('click', mostrarSolucion);
+
+        function generarAnagrama() {
+            // Ocultar solución anterior
+            document.getElementById('solucion').textContent = "";
+            document.getElementById('solucionBtn').style.display = 'none';
+            
+            // Verificar si quedan libros
+            if (librosRestantes.length === 0) {
+                document.getElementById('anagrama').textContent = "¡Todos los libros han sido mostrados!";
+                document.getElementById('restantes').textContent = "0 libros restantes";
+                return;
+            }
+            
+            // Seleccionar un libro aleatorio de los restantes
+            const indice = Math.floor(Math.random() * librosRestantes.length);
+            libroActual = librosRestantes[indice];
+            
+            // Crear anagrama (ahora conservando números)
+            anagramaActual = crearAnagramaConNumeros(libroActual);
+            document.getElementById('anagrama').textContent = anagramaActual;
+            
+            // Mostrar botón de solución
+            document.getElementById('solucionBtn').style.display = 'inline-block';
+            
+            // Actualizar contador de libros restantes
+            document.getElementById('restantes').textContent = `${librosRestantes.length} libros disponibles`;
+        }
+
+        function mostrarSolucion() {
+            // Mostrar solución
+            document.getElementById('solucion').textContent = libroActual;
+            document.getElementById('solucionBtn').style.display = 'none';
+            
+            // Eliminar el libro de la lista de restantes
+            librosRestantes = librosRestantes.filter(libro => libro !== libroActual);
+            
+            // Actualizar contador de libros restantes
+            document.getElementById('restantes').textContent = `${librosRestantes.length} libros disponibles`;
+        }
+
+        function crearAnagramaConNumeros(palabra) {
+            // Separar números y texto
+            const partes = palabra.split(/(\d+)/).filter(Boolean);
+            let resultado = [];
+            
+            for (let parte of partes) {
+                if (/^\d+$/.test(parte)) {
+                    // Es un número, lo dejamos igual
+                    resultado.push(parte);
+                } else {
+                    // Es texto, lo convertimos a anagrama
+                    const textoLimpio = parte.replace(/\s/g, '').toUpperCase();
+                    const arrayLetras = textoLimpio.split('');
+                    
+                    // Mezclar las letras
+                    for (let i = arrayLetras.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [arrayLetras[i], arrayLetras[j]] = [arrayLetras[j], arrayLetras[i]];
+                    }
+                    
+                    // Si el anagrama resulta igual a la palabra original, mezclar de nuevo
+                    if (arrayLetras.join('') === textoLimpio) {
+                        return crearAnagramaConNumeros(palabra);
+                    }
+                    
+                    resultado.push(arrayLetras.join(' '));
+                }
+            }
+            
+            return resultado.join(' ');
+        }
+    </script>
+</body>
+</html>
